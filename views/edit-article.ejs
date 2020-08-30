@@ -1,0 +1,95 @@
+<% extend('layout/layout') %>
+
+<%
+  if (article === undefined ) {
+    var article = {};
+  }
+%>
+
+<form class="col-12 col-md main articleForm" enctype="multipart/form-data">
+
+  <div class="form-group mb-4">
+    <label for="title" class="h5">標題</label>
+    <input type="text" name="title" id="title" class="form-control" placeholder="請輸入標題"
+     value="<%- article.title || '' %>" required>
+  </div>
+
+  <div class="form-group mb-4">
+    <label for="content" class="h5">內容</label>
+    <textarea name="content" id="content" required> <%- article.content || '' %> </textarea>
+  </div>
+
+  <div class="option-card mb-4">
+    <h3 class="option-title">筆記本</h3>
+    <div class="option-body">
+      <% for ( prop in categories) { %>
+        <div class="form-check mb-3">
+          <input type="radio" name="category" class="form-check-input"
+            id="<%- categories[prop].path %>" value="<%- prop %>"
+            <% if (article.category == prop) { %>
+              checked
+            <% } %> 
+          >
+          <label class="form-check-label" for="<%- categories[prop].path %>">
+            <%- categories[prop].name %>
+          </label>
+        </div>
+      <% } %>
+    </div>
+  </div>
+
+  <div class="option-card mb-4">
+    <h3 class="option-title">封面圖片</h3>
+    <div class="option-body">
+      <p class="mb-3">檔案請勿超過 3MB，若未上傳圖檔則會使用預設圖片</p>
+      
+      <div class="upload-btngroup">
+          <label for="coverimg" class="upload">
+            <input type="file" name="coverimg" id="coverimg" class="upload-input js-uploadImg"
+              accept="image/gif,image/jpeg,image/png"
+
+              <% if (article.coverImg_name) { %>
+                data-original-img-name="<%- article.coverImg_name %>"
+                data-original-img-url="<%- article.coverImg_url %>"
+              <% } %>
+            >
+            <i class="fas fa-image"></i> 上傳圖片
+          </label>
+          <a href="" class="btn btn-primary js-initImg">使用預設圖片</a>
+
+          <% if (article.coverImg_name) { %>
+            <a href="" class="btn btn-primary js-originalImg"
+              data-original-img-name="<%- article.coverImg_name %>"
+              data-original-img-url="<%- article.coverImg_url %>"
+            >還原</a>
+          <% } %>
+
+      </div>
+
+      <p class="mb-3 js-uploadText"><%- article.coverImg_name || '已使用預設圖片' %></p>
+
+      <img class="upload-thumbnail js-uploadThumbnail" src="<%- article.coverImg_url || '/images/cover.png' %>">
+    </div>
+
+  </div>
+
+  <button type="submit" class="btn btn-primary btn-block js-sendBtn" data-articleid="<%- article.id || '' %>">儲存</button>
+
+</form>
+
+<script src="https://cdn.ckeditor.com/4.14.1/full-all/ckeditor.js" crossorigin="anonymous"></script>
+<script>
+CKEDITOR.replace('content', {
+  language: 'zh-tw', // 語言
+  uiColor: '#F2F4F6', // 工具列背景色
+  // 工具列
+  toolbar: [
+    ['Font', 'FontSize'],
+    ['Bold', 'Italic', 'Strike'],
+    ['JustifyLeft', 'JustifyCenter', 'JustifyRight'],
+    ['Link', 'Image'],
+  ],
+  resize_enabled: false, // 是否可改變文字框尺寸
+  image_previewText: ' ', // 取消圖片預覽區的預設顯示文字
+});
+</script>

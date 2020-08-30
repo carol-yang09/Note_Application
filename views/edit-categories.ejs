@@ -1,0 +1,66 @@
+<% extend('layout/layout') %>
+
+<div class="col-12 col-md main">
+  <h2 class="mb-4 text-center">筆記本管理</h2>
+  <div class=" option-card mb-4">
+    <h3 class="option-title">筆記本列表</h3>
+    <div class="option-body">
+      <div class="row option-categories-title">
+        <div class="col-4">
+          名稱
+        </div>
+        <div class="col-5">
+          路徑
+        </div>
+      </div>
+
+      <% for ( prop in categories ) { %>
+        <div class="form-group row">
+          <label class="col-sm-4 col-form-label" for="<%- categories[prop].path %>">
+            <%- categories[prop].name %>
+          </label>
+          <div class="col-sm-5 mb-3 mb-sm-0">
+            <input type="text" class="form-control" name="<%- categories[prop].path %>"
+              id="<%- categories[prop].path %>" value="<%- categories[prop].path %>" disabled>
+          </div>
+          <div class="col-sm-3">
+            <button type="button" class="btn btn-danger js-openModal"
+              data-ref="categories"
+              data-title="<%- categories[prop].name %>"
+              data-id="<%- categories[prop].id %>"
+            >
+              刪除
+            </button>
+          </div>
+        </div>
+      <% } %>
+
+    </div>
+  </div>
+
+  <div class="option-card">
+    <h3 class="option-title">新增筆記本</h3>
+    <form class="option-body" action="/editcategories/create" method="POST">
+
+      <% if (hasError) { %>
+        <div class="alert alert-danger rounded-0">
+          <%- error %>
+        </div>
+      <% } %>
+
+      <div class="form-group row">
+        <label for="name" class="col-sm-4 col-form-label">筆記本名稱</label>
+        <div class="col-sm-8">
+          <input type="text" name="name" id="name" class="form-control" placeholder="請輸入筆記本名稱" required>
+        </div>
+      </div>
+      <div class="form-group row">
+        <label for="path" class="col-sm-4 col-form-label">筆記本路徑</label>
+        <div class="col-sm-8">
+          <input type="text" name="path" id="path" class="form-control" placeholder="請輸入筆記本路徑(限英文與數字組合)" required>
+        </div>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block">更新</button>
+    </form>
+  </div>
+</div>

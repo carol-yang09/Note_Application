@@ -1,0 +1,49 @@
+<% extend('layout/layout') %>
+
+<%
+  if ( categoryId === undefined ) {
+    var categoryId = '';
+  }
+%>
+
+<div class="col-12 col-md main">
+  <div class="toolbar">
+
+    <% if (star === "star") { %>
+      <a href="" class="btn btn-primary js-show" data-show="all"">
+        <i class="far fa-star"></i>
+        顯示全部筆記
+      </a>
+    <% } else {%>
+      <a href="" class="btn btn-primary js-show" data-show="star">
+        <i class="fas fa-star"></i>
+        顯示星號筆記
+      </a>
+    <% } %>
+
+    <ul class="arrange">
+      <li class="mr-2">
+        <a href="" class="arrange-btn js-arrange <% if(arrange === 'card') { %>arrange-active<% } %>"
+          data-arrange="card">
+          <i class="fas fa-th"></i>
+        </a>
+      </li>
+      <li>
+        <a href="" class="arrange-btn js-arrange <% if(arrange === 'list') { %>arrange-active<% } %>"
+          data-arrange="list">
+          <i class="fas fa-th-list"></i>
+        </a>
+      </li>
+    </ul>
+  </div>
+
+  <% if (articles.length <= 0) { %>
+    <div class="empty">沒有筆記</div>
+  <% } else if (arrange === 'card') { %>
+    <%- include('partials/card') %>
+    <%- include('partials/pagination') %>
+  <% } else { %>
+    <%- include('partials/list') %>
+    <%- include('partials/pagination') %>
+  <% } %>
+</div>

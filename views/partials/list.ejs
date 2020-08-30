@@ -1,0 +1,45 @@
+<div class="list-wrap">
+  <% for ( prop in articles ) { %>
+    <ul class="list">
+      <li>
+        <a href="" class="star <% if (articles[prop].star) { %> star-active <% } %> js-star"
+          data-articleid="<%- articles[prop].id %>"
+        >
+          <i class="fas fa-star"></i>
+        </a>
+      </li>
+      <li class="list-title">
+        <a href="/post/<%- articles[prop].id %>" class="list-text">
+          <%- striptags(articles[prop].title).slice(0, 20) %>...
+        </a>
+      </li>
+      <ul class="list-info">
+        <% if (categories.hasOwnProperty(articles[prop].category)) { %>
+          <li>
+            <a href="/category/<%- articles[prop].category %>" class="category">
+              <%- categories[articles[prop].category].name %>
+            </a>
+          </li>
+        <% } %>
+        <li class="text-muted">
+          <%- moment(articles[prop].create_time * 1000).format('YYYY/MM/DD') %>
+        </li>
+        <li>
+          <a href="/article/update/<%- articles[prop].id %>" class="">
+            <i class="fas fa-pencil-alt"></i>
+          </a>
+        </li>
+        <li>
+          <a href="#" class="trash js-openModal"
+            data-ref="article"
+            data-title="<%- articles[prop].title %>"
+            data-id="<%- articles[prop].id %>"
+          >
+            <i class="far fa-trash-alt"></i>
+          </a>
+        </li>
+      </ul>
+    </ul>
+  <% } %>
+
+</div>

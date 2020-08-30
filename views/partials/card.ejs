@@ -1,0 +1,53 @@
+<div class="card-wrap">
+  <% for ( prop in articles ) { %>
+    <div class="card">
+      <a href="/post/<%- articles[prop].id %>" class="card-img"
+        style="background-image:url(<%- articles[prop].coverImg_url || '../../images/cover.png' %>)">
+      </a>
+
+      <ul class="card-head">
+        <li>
+          <a href="" class="star <% if (articles[prop].star) { %> star-active <% } %> js-star"
+            data-articleid="<%- articles[prop].id %>"
+          >
+            <i class="fas fa-star"></i>
+          </a>
+        </li>
+        <ul class="d-flex">
+          <li>
+            <a href="/post/<%- articles[prop].id %>" class="card-text">
+              <%- striptags(articles[prop].title).slice(0, 5) %>...
+            </a>
+          </li>
+          <li>
+            <a href="/article/update/<%- articles[prop].id %>" class="ml-4">
+              <i class="fas fa-pencil-alt"></i>
+            </a>
+          </li>
+        </ul>
+        <li>
+          <a href="#" class="trash js-openModal"
+            data-ref="article"
+            data-title="<%- articles[prop].title %>"
+            data-id="<%- articles[prop].id %>"
+          >
+            <i class="far fa-trash-alt"></i>
+          </a>
+        </li>
+      </ul>
+
+      <ul class="card-foot">
+        <li class="text-muted">
+          <%- moment(articles[prop].create_time * 1000).format('YYYY/MM/DD') %>
+        </li>
+        <li>
+          <% if (categories.hasOwnProperty(articles[prop].category)) { %>
+            <a href="/category/<%- articles[prop].category %>" class="category">
+              <%- categories[articles[prop].category].name %>
+            </a>
+          <% } %>
+        </li>
+      </ul>
+    </div>
+  <% } %>
+</div>

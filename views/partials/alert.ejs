@@ -1,0 +1,10 @@
+<% var hasAlert = hasAlert || false %>
+
+<% if (hasAlert) { %>
+  <div class="alert alert-<%- alertStatus %> alertmessage">
+    <span class="mr-1">
+      <i class="fas fa-bullhorn"></i>
+    </span>
+    <%- alertMsg %>
+  </div>
+<% } %>

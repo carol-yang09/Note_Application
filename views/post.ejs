@@ -1,0 +1,58 @@
+<% extend('layout/layout') %>
+
+<div class="col-12 col-md main">
+  <div class="post">
+    <nav aria-label="breadcrumb" class="d-none d-md-block">
+      <ol class="breadcrumb px-0 bg-transparent">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+
+        <% if (categories.hasOwnProperty(article.category)) { %>
+          <li class="breadcrumb-item">
+            <a href="/category/<%- article.category %>">
+              <%- categories[article.category].name %>
+            </a>
+          </li>
+        <% } else { %>
+          <li class="breadcrumb-item">未分類</li>
+        <% } %>
+
+        <li class="breadcrumb-item active"><%- article.title %></li>
+      </ol>
+    </nav>
+
+    <h2 class="post-title">
+      <%- article.title %>
+      <a href="/article/update/<%- article.id %>" class="ml-3">
+        <i class="fas fa-pencil-alt"></i>
+      </a>
+    </h2>
+
+    <ul class="post-info">
+      <li>
+        <%- moment(article.create_time * 1000).format('YYYY/MM/DD') %>
+      </li>
+
+      <% if (categories.hasOwnProperty(article.category)) { %>
+        <li>
+          <a href="/category/<%- article.category %>">
+            <i class="fas fa-tags"></i>
+            <%- categories[article.category].name %>
+          </a>
+        </li>
+      <% } %>
+
+    </ul>
+
+    <div class="post-content">
+      <% if (article.coverImg_name) { %>
+        <img class="img-fluid post-coverimg" src="<%- article.coverImg_url %>" alt="<%- article.coverImg_name %>">
+      <% } %>
+
+      <%- article.content %>
+    </div>
+    
+    <p class="text-right">
+      更新時間： <%- moment(article.update_time * 1000).format('YYYY/MM/DD hh:mm a') %>
+    </p>
+  </div>
+</div>

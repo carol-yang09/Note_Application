@@ -1,0 +1,63 @@
+<%
+  if (!categoryId) {
+    var categoryId = '';
+  }
+  if (!pathName) {
+    var pathName = '';
+  }
+%>
+
+<div class="aside">
+  <div class="aside-header">
+    <h1 class="logo">
+      <a href="/">Note Appliaction</a>
+    </h1>
+
+    <a class="aside-toggle" role="button" data-toggle="collapse" href="#asideCollapse" aria-expanded="true" aria-controls="asideCollapse">
+      <i class="fas fa-bars"></i>
+    </a>
+  </div>
+
+  <div id="asideCollapse" class="aside-collapse collapse">
+    <ul class="menu">
+      <li>
+        <a href="/article/create" class="btn btn-primary addnote">
+          建立筆記
+        </a>
+      </li>
+      <li>
+        <a href="/" class="menu-link <% if(!pathName && !categoryId) { %> active <% } %>">
+          所有筆記
+        </a>
+      </li>
+      
+      <li class="books">
+        <a class="books-toggle" role="button" data-toggle="collapse" href="#booksCollapse" aria-expanded="true" aria-controls="booksCollapse">
+          筆記本
+        </a>
+        <ul id="booksCollapse" class="collapse show">
+          <% for (prop in categories) { %>
+            <li>
+              <a href="/category/<%- prop %>"
+                class="books-link <% if( prop === categoryId) { %> active <% } %>">
+                <%- categories[prop].name %>
+              </a>
+            </li>
+          <% } %>
+        </ul>
+      </li>
+
+      <li>
+        <a href="/editcategories" class="menu-link <% if( pathName === 'editcategories') { %> active <% } %>">筆記本管理</a>
+      </li>
+    </ul>
+    
+    <div class="user">
+      <p class="mb-2"><%- UserNickname %> 您好!</p>
+      <div class="d-flex justify-content-center">
+        <a href="/auth/signout" class="btn btn-primary mr-1">登出</a>
+        <a href="/setting" class="btn btn-muted">帳號設定</a>
+      </div>
+    </div>
+  </div>
+</div>
