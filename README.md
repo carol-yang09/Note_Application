@@ -82,12 +82,15 @@ https://morning-ridge-97909.herokuapp.com/
 ### 回饋訊息、互動操作
 
 * Loading 效果
+
 ![loading.png](https://i.postimg.cc/RFcc80SK/loading.png)
 
 * 回饋訊息
+
 ![message.png](https://i.postimg.cc/NMh6pXcQ/message.png)
 
 * 刪除互動操作
+
 ![modal.png](https://i.postimg.cc/tg9Y7crF/modal.png)
 
 ## 使用套件
