@@ -33,15 +33,16 @@ router.post('/signin', (req, res) => {
     .then((user) => {
       const userUid = user.user.uid;
 
-      usersRef.child(userUid).once('value').then((snapshot) => {
-        req.session.uid = userUid;
-        req.session.email = snapshot.val().email;
-        req.session.nickname = snapshot.val().nickname;
+      usersRef.child(userUid).once('value')
+        .then((snapshot) => {
+          req.session.uid = userUid;
+          req.session.email = snapshot.val().email;
+          req.session.nickname = snapshot.val().nickname;
 
-        req.flash('alert-msg', '登入成功');
-        req.flash('alert-status', 'success');
-        res.redirect('/');
-      });
+          req.flash('alert-msg', '登入成功');
+          req.flash('alert-status', 'success');
+          res.redirect('/');
+        });
     })
     .catch((error) => {
       const errorCode = error.code;

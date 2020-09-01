@@ -15,8 +15,6 @@ const convertPagination = require('../modules/convertPagination');
 
 const firebaseAuth = firebaseClient.auth();
 
-const articlesRef = firebaseDb.ref('/articles');
-
 const upload = multer({
   storage: multer.memoryStorage(),
   limits: {
@@ -41,21 +39,18 @@ router.get('/', (req, res) => {
   firebaseDb.ref(`/categories/${userUid}`).once('value')
     .then((snapshot) => {
       categories = snapshot.val() || {};
-      return articlesRef.orderByChild('author').equalTo(userUid).once('value');
+      return firebaseDb.ref(`/articles/${userUid}`).orderByChild('create_time').once('value');
     })
     .then((snapshot) => {
-      const array = [];
       path = `/?arrange=${arrange}`;
 
       snapshot.forEach((snapshotChild) => {
-        const val = snapshotChild.val();
-        array.push(val);
+        articles.push(snapshotChild.val());
       });
 
-      articles = array;
       if (star === 'star') {
         path = `/?arrange=${arrange}&star=star`;
-        articles = array.filter((item) => item.star === true);
+        articles = articles.filter((item) => item.star === true);
       }
 
       articles.reverse();
@@ -95,23 +90,21 @@ router.get('/category/:categoryId', (req, res) => {
   firebaseDb.ref(`/categories/${userUid}`).once('value')
     .then((snapshot) => {
       categories = snapshot.val() || {};
-      return articlesRef.orderByChild('author').equalTo(userUid).once('value');
+      return firebaseDb.ref(`/articles/${userUid}`).orderByChild('author').equalTo(userUid).once('value');
     })
     .then((snapshot) => {
-      const array = [];
       path = `/category/${categoryId}?arrange=${arrange}`;
 
       snapshot.forEach((snapshotChild) => {
         const val = snapshotChild.val();
         if (val.category === categoryId) {
-          array.push(val);
+          articles.push(val);
         }
       });
 
-      articles = array;
       if (star === 'star') {
         path = `/category/${categoryId}?arrange=${arrange}&star=star`;
-        articles = array.filter((item) => item.star === true);
+        articles = articles.filter((item) => item.star === true);
       }
 
       articles.reverse();
@@ -146,7 +139,7 @@ router.get('/post/:articleId', (req, res) => {
   firebaseDb.ref(`/categories/${userUid}`).once('value')
     .then((snapshot) => {
       categories = snapshot.val() || {};
-      return articlesRef.child(articleId).once('value');
+      return firebaseDb.ref(`/articles/${userUid}`).child(articleId).once('value');
     })
     .then((snapshot) => {
       const article = snapshot.val();
@@ -200,7 +193,7 @@ router.get('/article/update/:articleId', (req, res) => {
   firebaseDb.ref(`/categories/${userUid}`).once('value')
     .then((snapshot) => {
       categories = snapshot.val() || {};
-      return articlesRef.child(articleId).once('value');
+      return firebaseDb.ref(`/articles/${userUid}`).child(articleId).once('value');
     })
     .then((snapshot) => {
       article = snapshot.val() || {};
@@ -221,7 +214,7 @@ router.post('/article/create', upload, (req, res) => {
   const data = JSON.parse(JSON.stringify(req.body));
   const userUid = req.session.uid;
   const timestamp = Math.floor(Date.now() / 1000);
-  const articleRef = articlesRef.push();
+  const articleRef = firebaseDb.ref(`/articles/${userUid}`).push();
   data.id = articleRef.key;
   data.update_time = timestamp;
   data.create_time = timestamp;
@@ -260,14 +253,15 @@ router.post('/article/create', upload, (req, res) => {
 // 更新筆記
 router.post('/article/update/:articleId', upload, (req, res) => {
   const { articleId } = req.params;
+  const userUid = req.session.uid;
 
   // 解決 obj.hasOwnProperty is not a function 錯誤
   const data = JSON.parse(JSON.stringify(req.body));
   const timestamp = Math.floor(Date.now() / 1000);
-  const articleRef = articlesRef.child(articleId);
+  const articleRef = firebaseDb.ref(`/articles/${userUid}`).child(articleId);
   data.update_time = timestamp;
 
-  articlesRef.child(articleId).once('value')
+  firebaseDb.ref(`/articles/${userUid}`).child(articleId).once('value')
     .then((snapshot) => {
       const originalImgName = snapshot.val().coverImg_name;
 
@@ -315,7 +309,8 @@ router.post('/article/update/:articleId', upload, (req, res) => {
 // 刪除筆記
 router.delete('/article/delete/:articleId', (req, res) => {
   const { articleId } = req.params;
-  const articleRef = articlesRef.child(articleId);
+  const userUid = req.session.uid;
+  const articleRef = firebaseDb.ref(`/articles/${userUid}`).child(articleId);
   articleRef.once('value').then((snapshot) => {
     // 如果有封面圖片，則刪除
     const originalImgName = snapshot.val().coverImg_name;
@@ -333,8 +328,9 @@ router.delete('/article/delete/:articleId', (req, res) => {
 // 收藏/取消收藏 筆記
 router.put('/star/update/:articleId', (req, res) => {
   const { articleId } = req.params;
+  const userUid = req.session.uid;
 
-  const articleRef = articlesRef.child(articleId);
+  const articleRef = firebaseDb.ref(`/articles/${userUid}`).child(articleId);
   let star = false;
 
   articleRef.once('value')
@@ -478,6 +474,7 @@ router.post('/user/update/:updateItem', (req, res) => {
             break;
           default:
             errorMsg = error.message;
+            errorMsg = '錯誤：更新密碼失敗，請重新登入再嘗試更新';
             break;
         }
         req.flash('error', errorMsg);
@@ -511,17 +508,15 @@ router.delete('/user/delete', (req, res) => {
     // 刪除用戶分類
     .then(() => firebaseDb.ref('/categories').child(userUid).remove())
     // 刪除用戶文章
-    .then(() => firebaseDb.ref('/articles').once('value'))
+    .then(() => firebaseDb.ref('/articles').child(userUid).once('value'))
     .then((snapshot) => {
       snapshot.forEach((shopshotChild) => {
-        if (shopshotChild.val().author === userUid) {
-          const val = shopshotChild.val();
-          // 刪除文章封面圖
-          if (val.coverImg_name) {
-            delFile(val.coverImg_name);
-          }
-          firebaseDb.ref('/articles').child(val.id).remove();
+        const val = shopshotChild.val();
+        // 刪除文章封面圖
+        if (val.coverImg_name) {
+          delFile(val.coverImg_name);
         }
+        firebaseDb.ref('/articles').child(userUid).remove();
       });
     })
     // 清除 cookie
